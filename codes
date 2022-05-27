@@ -1,0 +1,48 @@
+from datetime import datetime
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import os
+
+os.chdir('C:/Users/dmomo/OneDrive/Desktop/PP Data Analysis')
+
+data = pd.read_excel('Vynara Power Analysis.xlsx', skiprows=2)
+data = data[~data['Date'].isnull()]
+data = data[['Date', 'Time', 'PSum']]
+data['date1'] = data['Date'].astype(str) + " " + data['Time'].astype(str)
+data['date1'] = data['date1'].astype('datetime64[h]')
+data = data[['date1', 'PSum']]
+data['date2'] = data['date1'].astype(str)
+data[['date','time']] = data['date2'].str.split(" ",expand=True)
+data = data[['date2', 'PSum']]
+def func(df,col1,col2):
+    df=df.reset_index().drop(columns=['index'])
+    l=[]
+    while True:
+        i=df[col1][0]
+        dft=df[df[col1]==i]
+        a=dft[col2]
+        m=a.max()
+        l.append((i,m))
+        df=df[df[col1]!=i].reset_index().drop(columns=['index'])
+        if df.empty:
+            return pd.DataFrame(l)
+data1 = func(data,'date2','PSum')
+data1.columns=['date2','PSum']
+def func(x):
+    a=x['date2']
+    b=a.split(" ")
+    return b
+def func(x):
+    a=x['date2']
+    b=a.split(" ")
+    return b
+
+data1[['date','time']]=data1.apply(func,axis=1,result_type='expand')
+data1=data1.drop(columns=['date2'])
+log = data1[['date', 'time', 'PSum']]
+log = log.iloc[:-1]
+log = log.iloc[:]
+log = log.reset_index(drop=True)
+
+log.to_excel(r'C:\Users\dmomo\OneDrive\Documents\Datalog\output1.xlsx',engine='xlsxwriter',index=False)
